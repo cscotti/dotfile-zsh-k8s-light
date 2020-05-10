@@ -2,13 +2,16 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
+
+# ip public 176.160.247.68
+
 export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+ZSH_THEME="agnoster2"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -70,7 +73,10 @@ ZSH_THEME="agnoster"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
+  go
+  gcloud
   docker
+  kubectl
   docker-compose
   terraform
   node
@@ -83,8 +89,8 @@ plugins=(
   go
   golang
   history
+  tmux
   )
-
 
 source $ZSH/oh-my-zsh.sh
 
@@ -117,18 +123,86 @@ source $ZSH/oh-my-zsh.sh
 
 # personal setting
 
+#french keyboard
 setxkbmap fr
+
+fgl() { find . -type f |grep -v "/.git/"|xargs grep -l "$1"; }
+fg() { find . -name "*$1*" -type f|grep -v "/.git/"|xargs grep "$2"; }
+f() { find . -name "*$1*" |grep -v "/.git/";}
+
+#kubernetes alias 
+
+
+alias ggmaster="gcloud container clusters get-credentials master"
+alias gctxl="gcloud config configurations list"
+alias gctx="gcloud config configurations activate"
+alias gtol="gcloud pubsub topics list"
+alias gsubl="gcloud pubsub subscriptions"
+alias gtosubl="gcloud pubsub topics list-subscriptions"
+
+alias k="kubectl"
+alias kctx="kubectx"
+alias kns="kubens"
+alias kport="kubectl get po --all-namespaces -o=jsonpath=\"{range .items[*]}{.spec.nodeName}{'\t'}{.spec.hostNetwork}{'\t'}{.metadata.namespace}{'\t'}{.metadata.name}{'\t'}{.spec.hostNetwork}{'\t'}{.spec.containers..containerPort}{'\n'}{end}\""
+alias ktaint="kubectl get node  -o=jsonpath='{range .items[*]}{.metadata.name}{\"\t\"}{.spec.taints}{\"\n\"}{end}'"
+alias klabel="kubectl get nodes --show-labels"
+
+alias tp="terraform plan"
+alias ti="terraform init"
+
+alias gitpv='git -c core.sshCommand="ssh -vvv" pull'
+
+alias gitl="git log --name-status --since='7 days ago'"
+alias gitlg="git lg --since='7 days ago'"
+alias gst='git status'
+alias gl='git pull'
+alias gp='git push'
+alias gd='git diff | mate'
+alias gb='git branch'
+alias gco='git checkout'
+alias gcob='git checkout -b'
+alias glog='git log'
+alias glogp='git log --pretty=format:"%h %s" --graph'
+
+alias pyenv_on='pyenv activate venv'
+alias pyenv_off='pyenv deactivate venv'
+
+##gcloud prompt
 source ~/.kube-prompt.sh
 
-#alias
-alias kctx="kubectx"
-alias gctx="gcloud config configurations list"
-alias kctl="kubectl"
+##gcloud key
+export GOOGLE_APPLICATION_CREDENTIALS=$HOME/token/python-preprod.json
+##export GOOGLE_APPLICATION_CREDENTIALS=/home/carlo/token/terraform.json
 
+##kubectx and kubens
+export PATH=~/.kubectx:$PATH
 
+##gcloud completion
+#source /usr/share/google-cloud-sdk/completion.zsh.inc
 
+##terraform
+#export PATH="$HOME/.tfenv/bin:$PATH"
 
+##node
+#export PATH=~/.npm-global/bin:$PATH
+#export PATH=~/.local/bin:$PATH
 
+##Java
+## https://www.oracle.com/java/technologies/javase-downloads.html
+#export JAVA_HOME=/usr/java/jdk1.8.0_241/bin/java
+#export PATH="/usr/java/jdk1.8.0_241/bin:$PATH"
 
+##go for cj 
+#export PATH=$PATH:/usr/local/go/bin
 
-
+##pyenv 
+##https://github.com/pyenv/pyenv/blob/master/COMMANDS.md
+##https://akrabat.com/creating-virtual-environments-with-pyenv/
+##============================================================
+#export PATH="$HOME/.pyenv/bin:$PATH"
+#eval "$(pyenv init -)"
+#eval "$(pyenv virtualenv-init -)"
+#pyenv install 3.7.5
+#pyenv install 2.7.6
+#pyenv local 3.7.5 2.7.6
+#pyenv versions
