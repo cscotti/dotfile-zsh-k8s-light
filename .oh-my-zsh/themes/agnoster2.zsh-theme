@@ -79,7 +79,8 @@ prompt_end() {
   else
     echo -n "%{%k%}"
   fi
-  echo -n "%{%f%}"
+  #echo -n "%{%f%}"
+  echo -n "\n$%{%f%}"
   CURRENT_BG=''
 }
 
@@ -89,8 +90,8 @@ prompt_end() {
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
   if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
-    #prompt_segment black default "%(!.%{%F{yellow}%}.)%n@%m"
-    prompt_segment black default "%(!.%{%F{yellow}%}.)%n"
+    prompt_segment black default "%(!.%{%F{yellow}%}.)%n@%m"
+    #prompt_segment black default "%(!.%{%F{yellow}%}.)%n"
   fi
 }
 
@@ -141,24 +142,30 @@ prompt_git() {
 }
 
 prompt_bzr() {
-    (( $+commands[bzr] )) || return
-    if (bzr status >/dev/null 2>&1); then
-        status_mod=`bzr status | head -n1 | grep "modified" | wc -m`
-        status_all=`bzr status | head -n1 | wc -m`
-        revision=`bzr log | head -n2 | tail -n1 | sed 's/^revno: //'`
-        if [[ $status_mod -gt 0 ]] ; then
-            prompt_segment yellow black
-            echo -n "bzr@"$revision "✚ "
-        else
-            if [[ $status_all -gt 0 ]] ; then
-                prompt_segment yellow black
-                echo -n "bzr@"$revision
-            else
-                prompt_segment green black
-                echo -n "bzr@"$revision
-            fi
-        fi
+  (( $+commands[bzr] )) || return
+
+  # Test if bzr repository in directory hierarchy
+  local dir="$PWD"
+  while [[ ! -d "$dir/.bzr" ]]; do
+    [[ "$dir" = "/" ]] && return
+    dir="${dir:h}"
+  done
+
+  local bzr_status status_mod status_all revision
+  if bzr_status=$(bzr status 2>&1); then
+    status_mod=$(echo -n "$bzr_status" | head -n1 | grep "modified" | wc -m)
+    status_all=$(echo -n "$bzr_status" | head -n1 | wc -m)
+    revision=$(bzr log -r-1 --log-format line | cut -d: -f1)
+    if [[ $status_mod -gt 0 ]] ; then
+      prompt_segment yellow black "bzr@$revision ✚"
+    else
+      if [[ $status_all -gt 0 ]] ; then
+        prompt_segment yellow black "bzr@$revision"
+      else
+        prompt_segment green black "bzr@$revision"
+      fi
     fi
+  fi
 }
 
 prompt_hg() {
@@ -199,7 +206,7 @@ prompt_hg() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment white $CURRENT_FG '%~'
+  prompt_segment cyan $CURRENT_FG '%~'
 }
 
 # Virtualenv: current working virtualenv
@@ -239,8 +246,8 @@ prompt_aws() {
 
 prompt_k8s() {
   if [[ -n "$(__gcloud_ps1)" ]]; then
-    prompt_segment green $CURRENT_FG 
-    echo -n "(\u2388|g:$(__gcloud_ps1)|k:$(__kube_ps1))"
+    prompt_segment white $CURRENT_FG 
+    echo -n "g:$(__gcloud_ps1)/\u2388:$(__kube_ps1)"
   fi
 }
 
@@ -251,14 +258,17 @@ build_prompt() {
   prompt_virtualenv
   prompt_aws
   prompt_context
-  prompt_k8s
+  
   prompt_dir
+  prompt_k8s
   prompt_git
+  
   prompt_bzr
   prompt_hg
   prompt_end
 }
 
 PROMPT='%{%f%b%k%}$(build_prompt) '
+
 
 
