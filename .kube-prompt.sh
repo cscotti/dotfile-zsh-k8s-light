@@ -10,7 +10,13 @@ __kube_ps1()
     CONTEXT=""
     if [ -f ~/.kube/config ]
     then
-      CONTEXT=$(cat ~/.kube/config | grep "current-context:" --color=NO | sed "s/current-context: //" )
+      CONTEXT=$(cat ~/.kube/config | grep "current-context:" --color=NO | sed "s/current-context: //" | sed "s/gke_monoprix-//"| sed "s/_europe.*//")
+      IS_PROD=$(echo $CONTEXT|grep -v 'preprod'|grep -icE 'prod|prd')
+      if [ "$IS_PROD" -eq "1" ];then
+        CONTEXT=%{$fg[red]%}${CONTEXT}%{$fg[black]%}
+      else
+        CONTEXT=%{$fg[black]%}${CONTEXT}%{$fg[black]%}
+      fi
     fi
     echo ${CONTEXT}
 }
@@ -18,7 +24,12 @@ __kube_ps1()
 __gcloud_ps1()
 {
     CONTEXT=$(cat ~/.config/gcloud/active_config)
-
+    IS_PROD=$(echo $CONTEXT|grep -v 'preprod' |grep -icE 'prod|prd')
+    if [ "$IS_PROD" -eq "1" ];then
+      CONTEXT=%{$fg[red]%}${CONTEXT}%{$fg[black]%}
+      else
+        CONTEXT=%{$fg[black]%}${CONTEXT}%{$fg[black]%}
+    fi
     echo ${CONTEXT}
 }
 kubeon()
