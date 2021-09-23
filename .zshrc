@@ -1,75 +1,7 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Path to your oh-my-zsh installation.
-
-# ip public 176.160.247.68
-
 export ZSH="$HOME/.oh-my-zsh"
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 ZSH_THEME="agnoster2"
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS=true
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
@@ -94,44 +26,23 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-
-# personal setting
-
+# =====================
 #french keyboard
+
 setxkbmap fr
+
+# =====================
+#  functions
 
 fgl() { find . -type f |grep -v "/.git/"|xargs grep -l "$1"; }
 fg() { find . -name "*$1*" -type f|grep -v "/.git/"|xargs grep "$2"; }
 f() { find . -name "*$1*" |grep -v "/.git/";}
 
-#kubernetes alias 
+# =====================
+# gcloud
 
+# gcloud key for Terraform
+# export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.token/xxxxx.json
 
 alias ggmaster="gcloud container clusters get-credentials master"
 alias gctxl="gcloud config configurations list"
@@ -140,6 +51,11 @@ alias gtol="gcloud pubsub topics list"
 alias gsubl="gcloud pubsub subscriptions"
 alias gtosubl="gcloud pubsub topics list-subscriptions"
 
+# =====================
+# kubectl
+
+source ~/.kube-prompt.sh
+
 alias k="kubectl"
 alias kctx="kubectx"
 alias kns="kubens"
@@ -147,11 +63,23 @@ alias kport="kubectl get po --all-namespaces -o=jsonpath=\"{range .items[*]}{.sp
 alias ktaint="kubectl get node  -o=jsonpath='{range .items[*]}{.metadata.name}{\"\t\"}{.spec.taints}{\"\n\"}{end}'"
 alias klabel="kubectl get nodes --show-labels"
 
+# =====================
+# kubectx and kubens
+
+export PATH=~/.kubectx:$PATH
+
+# =====================
+# Terraform
+
+#export PATH="$HOME/.tfenv/bin:$PATH"
+
 alias tp="terraform plan"
 alias ti="terraform init"
 
-alias gitpv='git -c core.sshCommand="ssh -vvv" pull'
+# =====================
+# Git
 
+alias gitpv='git -c core.sshCommand="ssh -vvv" pull'
 alias gitl="git log --name-status --since='7 days ago'"
 alias gitlg="git lg --since='7 days ago'"
 alias gst='git status'
@@ -164,36 +92,33 @@ alias gcob='git checkout -b'
 alias glog='git log'
 alias glogp='git log --pretty=format:"%h %s" --graph'
 
-alias pyenv_on='pyenv activate venv'
-alias pyenv_off='pyenv deactivate venv'
+# =====================
+# completion
 
-##gcloud prompt
-source ~/.kube-prompt.sh
-
-##gcloud key
-export GOOGLE_APPLICATION_CREDENTIALS=$HOME/token/python-preprod.json
-##export GOOGLE_APPLICATION_CREDENTIALS=/home/carlo/token/terraform.json
-
-##kubectx and kubens
-export PATH=~/.kubectx:$PATH
-
-##gcloud completion
+#gcloud completion
 #source /usr/share/google-cloud-sdk/completion.zsh.inc
 
-##terraform
-#export PATH="$HOME/.tfenv/bin:$PATH"
 
-##node
+# =====================
+# node
 #export PATH=~/.npm-global/bin:$PATH
 #export PATH=~/.local/bin:$PATH
 
-##Java
+# =====================
+# Java
 ## https://www.oracle.com/java/technologies/javase-downloads.html
 #export JAVA_HOME=/usr/java/jdk1.8.0_241/bin/java
 #export PATH="/usr/java/jdk1.8.0_241/bin:$PATH"
 
-##go for cj 
+# =====================
+# golang
 #export PATH=$PATH:/usr/local/go/bin
+
+# =====================
+# Python
+
+alias pyenv_on='pyenv activate venv'
+alias pyenv_off='pyenv deactivate venv'
 
 ##pyenv 
 ##https://github.com/pyenv/pyenv/blob/master/COMMANDS.md
