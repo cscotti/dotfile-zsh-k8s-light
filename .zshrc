@@ -1,6 +1,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="agnoster2"
+# ZSH_THEME="miloshadzic"
 
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
@@ -87,6 +88,11 @@ kgpcont() { kubectl get pods -o="custom-columns=NameSpace:.metadata.namespace,NA
 #  Divers
 
 alias -g G='| grep -i'
+alias ip="ifconfig | grep inet | grep broadcast | cut -d' ' -f2"
+alias pubip="curl ipinfo.io/ip"
+alias sf="screenfetch -E"
+alias vzsh="vim ~/.zshrc"
+alias szsh="source ~/.zshrc"
 
 function grepe {
   grep --color -E "$1|$" $2
@@ -97,7 +103,7 @@ function grepe {
 
 # gcloud key for Terraform
 # export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.token/xxxxx.json
-
+alias gc="gcloud"
 alias ggmaster="gcloud container clusters get-credentials master"
 alias gctxl="gcloud config configurations list"
 alias gctx="gcloud config configurations activate"
@@ -113,6 +119,7 @@ export KUBE_EDITOR=nano
 source ~/.kube-prompt.sh
 
 alias k="kubectl"
+alias kclf="kubectl logs -f"
 alias kc="kubecolor --force-colors"
 alias kdoc="kubectl explain $1 --recursive"
 alias kport="kubectl get po --all-namespaces -o=jsonpath=\"{range .items[*]}{.spec.nodeName}{'\t'}{.spec.hostNetwork}{'\t'}{.metadata.namespace}{'\t'}{.metadata.name}{'\t'}{.spec.hostNetwork}{'\t'}{.spec.containers..containerPort}{'\n'}{end}\""
@@ -120,9 +127,40 @@ alias ktaint="kubectl get node  -o=jsonpath='{range .items[*]}{.metadata.name}{\
 alias klabel="kubectl get nodes --show-labels"
 alias kupscale="kubectl get hpa | awk '{if (\$4 < \$6) print \$0}'"
 alias ksearch="kubectl get po| grep "
+alias kpf="kubectl port-forward"
 
 function ksecretpass {
   kubectl get secret "$1" -o jsonpath='{ .data.password}'  | base64 --decode
+}
+
+function kcgpg() {
+   kubectl get pods | grep $1 | cut -d" " -f 1
+}
+
+function kcpfg() {
+   kubectl port-forward `kcgpg $1 | head -n 1` $2 
+}
+
+function kclogsg() {
+   kubectl logs -f `kcgpg $1 | head -n 1`
+}
+
+function kcgorec() {
+   kubectl config set-context gke-rec --cluster=gke_rec_europe-west1-d_master --user=gke_rec_europe-west1-d_master --namespace=default
+   kubectl config use-context gke-rec
+}
+
+function kcgetport() {
+   kubectl describe pod $1 | grep Port:
+}
+
+function portki() {
+   sudo lsof -i tcp:$1
+}
+
+function kcchangenamespace() {
+   echo "kubectl config set-context $(kubectl config current-context) --namespace=<insert-namespace-name-here>"
+   kubectl config set-context $(kubectl config current-context) --namespace=$1
 }
 
 # =====================
@@ -155,6 +193,11 @@ alias gco='git checkout'
 alias gcob='git checkout -b'
 alias glog='git log'
 alias glogp='git log --pretty=format:"%h %s" --graph'
+
+alias glg="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
+alias pullover="git stash && git pull && git stash pop"
+alias gds="git diff --staged"
+alias devopspush="git pull --rebase origin master && git pull --rebase origin auto-deploy && git pull --rebase origin master && git push"
 
 # =====================
 # completion
@@ -209,3 +252,5 @@ alias pyenv_off='pyenv deactivate venv'
 # macfix / fix minikube completion
 # declare -A aliashash 2>/dev/null # the only way I found to make the completion work on my laptop
 # source <(minikube completion zsh)
+
+
