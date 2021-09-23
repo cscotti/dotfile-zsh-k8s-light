@@ -11,7 +11,7 @@ __kube_ps1()
     SHELL_ZSH="/bin/zsh"
     if [ -f ~/.kube/config ]
     then
-      CONTEXT=$(cat ~/.kube/config | grep "current-context:" --color=NO | sed "s/current-context: //" | sed "s/gke_monoprix-//"| sed "s/_europe.*//")
+      CONTEXT=$(cat ~/.kube/config | grep "current-context:" --color=NO | sed "s/current-context: //" | sed "s/gke_//"| sed "s/_europe.*//")
       IS_PROD=$(echo $CONTEXT|grep -v 'preprod'|grep -icE 'prod|prd')
 
       if [ "$SHELL" != "$SHELL_ZSH" ];then
