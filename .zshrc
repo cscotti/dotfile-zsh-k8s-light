@@ -31,6 +31,8 @@ plugins=(
   helm
   history
   systemd
+  vagrant
+  zsh-autosuggestions
   )
 
 source $ZSH/oh-my-zsh.sh
