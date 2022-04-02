@@ -79,6 +79,10 @@ fgl() { find . -type f -not -path "./.git/*" -exec grep -l "$1" '{}' \; }
 fglp() { find . -type f -not -path "./.git/*" -exec grep "$1" '{}' \; }
 fg() { find . -name "*$1*" -type f|grep -v "/.git/"|xargs grep "$2"; }
 f() { find . -name "*$1*" |grep -v "/.git/";}
+kgpc() { kubectl get po -l component="$1";}
+decode () {
+  echo "$1" | base64 -d ; echo
+}
 
 kgpcomp() { kubectl get po -l component="$1";}
 kgpcont() { kubectl get pods -o="custom-columns=NameSpace:.metadata.namespace,NAME:.metadata.name,CONTAINERS:.spec.containers[*].name,status:.status.phase" |grep "$1";}
@@ -128,6 +132,20 @@ alias klabel="kubectl get nodes --show-labels"
 alias kupscale="kubectl get hpa | awk '{if (\$4 < \$6) print \$0}'"
 alias ksearch="kubectl get po| grep "
 alias kpf="kubectl port-forward"
+alias kapi="kubectl explain $1 --recursive"
+alias kres="kubectl api-resources -o wide" #--api-group=extension
+alias kport="kubectl get po --all-namespaces -o=jsonpath=\"{range .items[*]}{.spec.nodeName}{'\t'}{.spec.hostNetwork}{'\t'}{.metadata.namespace}{'\t'}{.metadata.name}{'\t'}{.spec.hostNetwork}{'\t'}{.spec.containers..containerPort}{'\n'}{end}\""
+alias ktaint="kubectl get node  -o=jsonpath='{range .items[*]}{.metadata.name}{\"\t\"}{.spec.taints}{\"\n\"}{end}'"
+alias klabel="kubectl get nodes --show-labels"
+alias kjob="kubectl get job -o=\"custom-columns=NAME:.metadata.name,STATUS:.status.conditions[].status,TYPE:.status.conditions[].type,REASON:.status.conditions[].reason,DESC:.status.conditions[].message,lastProbeTime:.status.conditions[].lastProbeTime,lastTransitionTime:.status.conditions[].lastTransitionTime\""
+
+alias ggmaster="gcloud container clusters get-credentials master"
+alias gctxl="gcloud config configurations list"
+alias gctx="gcloud config configurations activate"
+
+alias tol="gcloud pubsub topics list"
+alias subl="gcloud pubsub subscriptions"
+alias tosubl="gcloud pubsub topics list-subscriptions"
 
 function ksecretpass {
   kubectl get secret "$1" -o jsonpath='{ .data.password}'  | base64 --decode
@@ -179,7 +197,13 @@ alias tp="terraform plan"
 alias ti="terraform init"
 
 # =====================
+# Mongo
+alias cleanmongors=" sed -e 's/ObjectId(\"/\"/g' | sed -e 's/ISODate(\"/\"/g' | sed -e 's/\")/\"/g'"
+
+
+# =====================
 # Git
+alias git_config="git config --global --list"
 
 alias gitpv='git -c core.sshCommand="ssh -vvv" pull'
 alias gitl="git log --name-status --since='7 days ago'"
@@ -238,6 +262,19 @@ alias pyenv_off='pyenv deactivate venv'
 #pyenv install 2.7.6
 #pyenv local 3.7.5 2.7.6
 #pyenv versions
+
+# ==========================
+# FLUXCD
+# install
+# curl -s https://fluxcd.io/install.sh | sudo bash
+
+. <(flux completion zsh)
+#export GITHUB_TOKEN=cscotti
+#export GITHUB_USER=
+
+flux_check(){ flux check --pre}
+flux_get()  { flux get kustomizations --watch}
+
 
 # =====================
 # Macos tips
